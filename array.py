@@ -31,6 +31,21 @@ class Array:
                 prev_item = item
                 self.__last = prev_item
 
+    def __at(self, index=None, key=None, value=None) -> Item:
+        item = self.__items
+        count = 0
+        while item:
+            if index and index == count:
+                return item
+            if key and key == item.key:
+                return item
+            if value and value == item.value:
+                return item
+            item = item.next
+            count += 1
+
+        return None
+
     def length(self):
         item = self.__items
         length = 0
@@ -38,6 +53,14 @@ class Array:
             length += 1
             item = item.next
         return length
+
+    def set(self, index, value=None, key=None):
+        item: Item = self.__at(index=index)
+        if item:
+            item.key = key if key else item.key
+            item.value = value if value else item.value
+            return True
+        return False
 
     def insert(self, value, key=None, at_index=0):
         item = self.__items
@@ -191,4 +214,7 @@ if __name__ == "__main__":
     print(test_array.length())
     print(test_array.delete(50))
     print(test_array.length())
+
+    if test_array.set(10, 100, key="k.100"):
+        print(test_array)
 
