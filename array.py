@@ -49,7 +49,11 @@ class Array:
 
         return None
 
-    def length(self):
+    def length(self) -> int:
+        """
+        Count the length of Array instance
+        :return: the count of items, 0 - in case of empty
+        """
         item = self.__items
         length = 0
         while item:
@@ -229,7 +233,12 @@ class Array:
             item = item.next
         return filtered
 
-    def scopy(self):  # return the safe copy of self
+    def scopy(self):
+        """
+        Returns the safe copy of this array
+        :return:
+            Array: the copy of current instance of Array class
+        """
         new_arr = Array()
         item = self.__items
         while item:
@@ -245,7 +254,14 @@ class Array:
     def sort(self, direct: str = "asc"):
         pass
 
-    def append(self, val, key=None, count=1):
+    def append(self, val, key=None, count: int = 1):
+        """
+        Append the new item at the end of Array instance
+        :param val: [any] - the value
+        :param key: [any] - optional parameter
+        :param count: [int] - optional parameter, the count of items to be appended
+        :return:
+        """
         self.__add(val=val, key=key, count=count)
 
 
