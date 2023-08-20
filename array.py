@@ -203,7 +203,15 @@ class Array:
         return None
 
     def filter(self, by_value=None, by_key=None) -> List[{}]:
-        pass
+        filtered = []
+        item = self.__items
+        while item:
+            if by_key and by_key == item.key:
+                filtered.append({item.key:item.value})
+            if by_value and by_value == item.value:
+                filtered.append({item.key:item.value})
+            item = item.next
+        return filtered
 
     def scopy(self):  # return the safe copy of self
         new_arr = Array()
@@ -211,7 +219,6 @@ class Array:
         while item:
             new_arr.append(item.value, key=item.key)
             item = item.next
-
         return new_arr
 
     def diff(self):
@@ -243,3 +250,13 @@ if __name__ == "__main__":
 
     arr_copy = test_array.scopy()
     print(arr_copy)
+    arr_copy.set(20, 100, key="k.20")
+    arr_copy.set(30, 100, key="k.20")
+    arr_copy.set(40, 100, key="k.20")
+    arr_copy.set(50, 100, key="k.20")
+
+    fv100 = arr_copy.filter(by_value=100)
+    fk20 = arr_copy.filter(by_key="k.20")
+
+    print(fv100, " : ", fk20)
+
