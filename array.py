@@ -207,6 +207,10 @@ class Array:
 
     def scopy(self):  # return the safe copy of self
         new_arr = Array()
+        item = self.__items
+        while item:
+            new_arr.append(item.value, key=item.key)
+            item = item.next
 
         return new_arr
 
@@ -236,3 +240,6 @@ if __name__ == "__main__":
 
     if test_array.set(10, 100, key="k.100"):
         print(test_array)
+
+    arr_copy = test_array.scopy()
+    print(arr_copy)
