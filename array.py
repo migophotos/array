@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Item:
     def __init__(self, key=None, value=None, next_item=None, prev_item=None):
         self.value = value
@@ -72,7 +75,7 @@ class Array:
             index += 1
 
         if not item:
-            return False    # out of index
+            return False  # out of index
 
         new_item = Item(value=value, key=key)
         if at_index == 0:
@@ -199,6 +202,22 @@ class Array:
 
         return None
 
+    def filter(self, by_value=None, by_key=None) -> List[{}]:
+        pass
+
+    def scopy(self):  # return the safe copy of self
+        new_arr = Array()
+
+        return new_arr
+
+    def diff(self):
+        pass
+
+    DIRECTION = ("az", "za", "orig")
+
+    def sort(self, direct: str = "az"):
+        pass
+
     def append(self, val, key=None, count=1):
         self.__add(val=val, key=key, count=count)
 
@@ -217,4 +236,3 @@ if __name__ == "__main__":
 
     if test_array.set(10, 100, key="k.100"):
         print(test_array)
-
