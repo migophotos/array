@@ -66,16 +66,22 @@ class Array:
 
     def delete(self, at_index=None, value=None, key=None):
         item = self.__items
+
         index = 0
         while item:
-            if at_index == index:
+            if at_index and at_index == index:
                 break
+            if value and value == item.value:
+                break
+            if key and key == item.key:
+                break
+
             item = item.next
             index += 1
         if not item:
             return False
 
-        if at_index == 0:
+        if index == 0:
             to_be_deleted = self.__items
             self.__items = to_be_deleted.next
             del to_be_deleted
@@ -85,6 +91,7 @@ class Array:
             if item.next:
                 item.next.prev = item.prev
             del to_be_deleted
+
         return True
 
     def __str__(self):
@@ -171,3 +178,17 @@ class Array:
 
     def append(self, val, key=None, count=1):
         self.__add(val=val, key=key, count=count)
+
+
+if __name__ == "__main__":
+    test_array = Array()
+    for i in range(0, 100):
+        test_array.append(i, f"k.{i}")
+
+    print(test_array)
+    print(test_array.index(val=50))
+    print(test_array.index(key="k.50"))
+    print(test_array.length())
+    print(test_array.delete(50))
+    print(test_array.length())
+
