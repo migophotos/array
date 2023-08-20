@@ -203,6 +203,22 @@ class Array:
         return None
 
     def filter(self, by_value=None, by_key=None) -> List[{}]:
+        """
+        Finds all concurrences specified by key or by value, builds and
+        returns the list of pairs in form [{key:value}, {key:value}, ...],
+        one of two arguments must to be specified!
+
+        Parameters
+            by_value [any] find all concurrences by specified value
+            by_key [any]  find all concurrences by specified key
+
+        Returns
+            List: the list of pairs in form [{key:value}, {key:value}, ...],
+            or empty list in case of no one items was found
+
+        Examples
+            print(arr.filter(by_key="key")
+        """
         filtered = []
         item = self.__items
         while item:
@@ -224,9 +240,9 @@ class Array:
     def diff(self):
         pass
 
-    DIRECTION = ("az", "za", "orig")
+    DIRECTION = ("ascending", "descending", "original")
 
-    def sort(self, direct: str = "az"):
+    def sort(self, direct: str = "asc"):
         pass
 
     def append(self, val, key=None, count=1):
@@ -257,6 +273,7 @@ if __name__ == "__main__":
 
     fv100 = arr_copy.filter(by_value=100)
     fk20 = arr_copy.filter(by_key="k.20")
-
     print(fv100, " : ", fk20)
+
+
 
