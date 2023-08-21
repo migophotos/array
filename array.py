@@ -2,17 +2,23 @@ from typing import List
 
 
 class Item:
+    """
+
+    """
     def __init__(self, key=None, value=None, next_item=None, prev_item=None):
         self.value = value
         self.key = key
         self.prev = prev_item
         self.next = next_item
 
-    def get(self):
-        return [self.value, self.key]
+    def get(self) -> List:
+        return [self.key, self.value]
 
 
 class Array:
+    """
+    Array implementation with handy API
+    """
     def __init__(self, length=0, initial_value=0):
         self.__last = None
         self.__items = None
@@ -34,11 +40,11 @@ class Array:
                 prev_item = item
                 self.__last = prev_item
 
-    def __at(self, index=None, key=None, value=None) -> Item:
+    def __at(self, index=-1, key=None, value=None) -> Item:
         item = self.__items
         count = 0
         while item:
-            if index and index == count:
+            if index >= 0 and index == count:
                 return item
             if key and key == item.key:
                 return item
@@ -62,6 +68,13 @@ class Array:
         return length
 
     def set(self, index, value=None, key=None):
+        """
+        Set the value and key to item at specified index
+        :param index: the index of item than will bbe changed
+        :param value: optional parameter that will be stored
+        :param key: optional parameter that will bbe stored
+        :return: [bool] True in case of item was found and changed
+        """
         item: Item = self.__at(index=index)
         if item:
             item.key = key if key else item.key
@@ -70,6 +83,13 @@ class Array:
         return False
 
     def insert(self, value, key=None, at_index=0):
+        """
+        Insert new Item at specified position
+        :param value: new Item value
+        :param key: new Item key (optional)
+        :param at_index: new Item position inside array, Default is 0
+        :return: False in case of out of index
+        """
         item = self.__items
         index = 0
         while item:
@@ -94,12 +114,20 @@ class Array:
 
         return True
 
-    def delete(self, at_index=None, value=None, key=None):
+    def delete(self, at_index=-1, value=None, key=None):
+        """
+        Delete item from array. Item may be identified by its position, by value or by key
+        In case of Item, specified by value or key onnly the first found item will be deleted
+        :param at_index: an index of item that must be deleted
+        :param value: the item with this value will be deleted
+        :param key: the item with this ey will be deleted
+        :return: False in case of out of index
+        """
         item = self.__items
 
         index = 0
         while item:
-            if at_index and at_index == index:
+            if at_index >= 0 and at_index == index:
                 break
             if value and value == item.value:
                 break
@@ -144,7 +172,13 @@ class Array:
         result += "]"
         return result
 
-    def index(self, val=None, key=None):
+    def index(self, val=None, key=None) -> int:
+        """
+        Find the index of first occurrence of item with specified value or key
+        :param val: find item bby value
+        :param key: find value by key
+        :return: an index of first occurrence of item or -1 in case of item not found
+        """
         index = -1
         item = self.__items
         while item:
@@ -159,12 +193,18 @@ class Array:
 
         return index
 
-    def value(self, index=None, key=None):
+    def value(self, index: int = -1, key=None):
+        """
+        Find and return the value of item specified by index or first occurrence of item, specified by key
+        :param index: an index of item
+        :param key: a key of item
+        :return: value or None in case of item was not found
+        """
         value = None
         item = self.__items
         count = 0
         while item:
-            if index and index == count:
+            if index >= 0 and index == count:
                 value = item.value
                 break
             if key and key == item.key:
@@ -175,12 +215,18 @@ class Array:
 
         return value
 
-    def key(self, index=None, val=None):
+    def key(self, index: int = -1, val=None):
+        """
+        Find and return the key of item specified by index or first occurrence of item, specified by value
+        :param index: an index of item
+        :param val: a value of item
+        :return: key or None in case of item was not found or item has not key
+        """
         key = None
         item = self.__items
         count = 0
         while item:
-            if index and index == count:
+            if index >= 0 and index == count:
                 key = item.key
                 break
             if val and val == item.value:
@@ -191,11 +237,19 @@ class Array:
 
         return key
 
-    def at(self, index=None, key=None, value=None):
+    def at(self, index: int = -1, key=None, value=None) -> List:
+        """
+        Find an item by specified parameter and return the list of key and value: [key, value]
+        :param index: return an item by specified index
+        :param key: return the first occurrence of item with specified key
+        :param value: return the first occurrence of item with specified value
+        :return: the list of item parameters: key and value in form [item.key, item.value],
+        or empty list in case of item was not found
+        """
         item = self.__items
         count = 0
         while item:
-            if index and index == count:
+            if index >= 0 and index == count:
                 return item.get()
             if key and key == item.key:
                 return item.get()
@@ -204,24 +258,22 @@ class Array:
             item = item.next
             count += 1
 
-        return None
+        return []
 
     def filter(self, by_value=None, by_key=None) -> List[{}]:
         """
         Finds all concurrences specified by key or by value, builds and
         returns the list of pairs in form [{key:value}, {key:value}, ...],
-        one of two arguments must to be specified!
+        one of two arguments must be specified!
 
-        Parameters
-            by_value [any] find all concurrences by specified value
-            by_key [any]  find all concurrences by specified key
+        :param by_value: [any] find all concurrences by specified value
+        :param by_key: [any]  find all concurrences by specified key
 
-        Returns
-            List: the list of pairs in form [{key:value}, {key:value}, ...],
+        :return: List: the list of pairs in form [{key:value}, {key:value}, ...],
             or empty list in case of no one items was found
 
-        Examples
-            print(arr.filter(by_key="key")
+        Example
+                print(arr.filter(by_key="key")
         """
         filtered = []
         item = self.__items
@@ -254,15 +306,16 @@ class Array:
     def sort(self, direct: str = "asc"):
         pass
 
-    def append(self, val, key=None, count: int = 1):
+    def append(self, val, key=None, count: int = 1) -> int:
         """
         Append the new item at the end of Array instance
         :param val: [any] - the value
         :param key: [any] - optional parameter
         :param count: [int] - optional parameter, the count of items to be appended
-        :return:
+        :return: the new length of array
         """
         self.__add(val=val, key=key, count=count)
+        return self.length()
 
 
 if __name__ == "__main__":
@@ -290,6 +343,11 @@ if __name__ == "__main__":
     fv100 = arr_copy.filter(by_value=100)
     fk20 = arr_copy.filter(by_key="k.20")
     print(fv100, " : ", fk20)
+
+    arr = arr_copy.at(100)
+    print(arr)
+    print(fv100)
+
 
 
 
