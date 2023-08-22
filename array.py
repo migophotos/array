@@ -57,10 +57,10 @@ class Array:
         return None
 
     def sort_by_value(self, e):
-        return e["value"]
+        return "" if e["value"] is None else e["value"]
 
     def sort_by_key(self, e):
-        return e["key"]
+        return "" if e["key"] is None else e["key"]
 
     def sort(self, reverse: bool = False, sort_by: str = "val"):
         list_to_sort = self.filter()
@@ -364,7 +364,7 @@ if __name__ == "__main__":
 
     to_be_sorted = Array()
     for i in range(0, 10):
-        to_be_sorted.append(10-i, f"k.{i}")
+        to_be_sorted.append(10-i)
 
     print("sort by value, ascending:", to_be_sorted.sort(reverse=False))
     print("sort by value, descending", to_be_sorted.sort(reverse=True))
