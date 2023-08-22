@@ -22,6 +22,7 @@ class Array:
     def __init__(self, length=0, initial_value=0):
         self.__last = None
         self.__items = None
+        self.__sorted_list = []
         if length:
             self.__add(initial_value, count=length)
 
@@ -54,6 +55,26 @@ class Array:
             count += 1
 
         return None
+
+    def sort_by_value(self, e):
+        return e["value"]
+
+    def sort_by_key(self, e):
+        return e["key"]
+
+    def sort(self, reverse: bool = False, sort_by: str = "val"):
+        list_to_sort = self.filter()
+        if len(list_to_sort):
+            if sort_by == "key":
+                list_to_sort.sort(reverse=reverse, key=self.sort_by_key)
+            else:
+                list_to_sort.sort(reverse=reverse, key=self.sort_by_value)
+
+            self.__sorted_list = list_to_sort
+            return self.__sorted_list
+
+    def get_sorted_list(self) -> List:
+        return self.__sorted_list
 
     def length(self) -> int:
         """
@@ -117,7 +138,7 @@ class Array:
     def delete(self, at_index=-1, value=None, key=None):
         """
         Delete item from array. Item may be identified by its position, by value or by key
-        In case of Item, specified by value or key onnly the first found item will be deleted
+        In case of Item, specified by value or key only the first found item will be deleted
         :param at_index: an index of item that must be deleted
         :param value: the item with this value will be deleted
         :param key: the item with this ey will be deleted
@@ -155,8 +176,8 @@ class Array:
     def __str__(self):
         result = "["
         item = self.__items
+        key_str = val_str = ""
         while item:
-            key_str = val_str = ""
             if type(item.key) == str:
                 key_str = f"'{item.key}'"
             else:
@@ -279,9 +300,11 @@ class Array:
         item = self.__items
         while item:
             if by_key and by_key == item.key:
-                filtered.append({item.key:item.value})
+                filtered.append({item.key: item.value})
             if by_value and by_value == item.value:
-                filtered.append({item.key:item.value})
+                filtered.append({item.key: item.value})
+            if by_key is None and by_value is None:
+                filtered.append({"key": item.key, "value": item.value})
             item = item.next
         return filtered
 
@@ -299,11 +322,6 @@ class Array:
         return new_arr
 
     def diff(self):
-        pass
-
-    DIRECTION = ("ascending", "descending", "original")
-
-    def sort(self, direct: str = "asc"):
         pass
 
     def append(self, val, key=None, count: int = 1) -> int:
@@ -344,10 +362,11 @@ if __name__ == "__main__":
     fk20 = arr_copy.filter(by_key="k.20")
     print(fv100, " : ", fk20)
 
-    arr = arr_copy.at(100)
-    print(arr)
-    print(fv100)
+    to_be_sorted = Array()
+    for i in range(0, 10):
+        to_be_sorted.append(10-i, f"k.{i}")
 
-
-
-
+    print("sort by value, ascending:", to_be_sorted.sort(reverse=False))
+    print("sort by value, descending", to_be_sorted.sort(reverse=True))
+    print("sort by key, ascending", to_be_sorted.sort(reverse=False, sort_by="key"))
+    print("sort by key, descending", to_be_sorted.sort(reverse=True, sort_by="key"))
