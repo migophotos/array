@@ -19,13 +19,19 @@ class Array:
     """
     Array implementation with handy API
     """
-    def __init__(self, length=0, initial_value=0):
+    def __init__(self, length=0, initial_value=0, from_list=[], from_dict={}):
         self.__next = None
         self.__last = None
         self.__items = None
         self.__sorted_list = []
         if length:
             self.__add(initial_value, count=length)
+        if len(from_list):
+            for il in from_list:
+                self.__add(il)
+
+        for dk in from_dict:
+            self.__add(from_dict[dk], key=dk)
 
     def __str__(self):
         result = "["
@@ -391,5 +397,18 @@ if __name__ == "__main__":
     for item in arr_copy:
         v = item
 
-    for item in fv100:
-        v = item
+    myit = iter(fv100)
+    print(next(myit))
+    print(next(myit))
+    print(next(myit))
+    print(next(myit))
+
+    #   create Array from list
+    arr = ["banana", "orange", "kiwi"]
+    fruits = Array(from_list=arr)
+    print(f"fruits length is: {fruits.length()}: {fruits}")
+
+    #   create Array from dict
+    dobj = {"k1": "banana", "k2": "orange", "k3": "kiwi"}
+    fruits_arr = Array(from_list=arr, from_dict=dobj)
+    print(f"fruits length is: {fruits_arr.length()}: {fruits_arr}")
