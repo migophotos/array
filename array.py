@@ -20,11 +20,48 @@ class Array:
     Array implementation with handy API
     """
     def __init__(self, length=0, initial_value=0):
+        self.__next = None
         self.__last = None
         self.__items = None
         self.__sorted_list = []
         if length:
             self.__add(initial_value, count=length)
+
+    def __str__(self):
+        result = "["
+        item = self.__items
+        key_str = val_str = ""
+        while item:
+            if type(item.key) == str:
+                key_str = f"'{item.key}'"
+            else:
+                key_str = f"{item.key}"
+
+            if type(item.value) == str:
+                val_str = f"'{item.value}'"
+            else:
+                val_str = f"{item.value}"
+            result += f"{key_str}: {val_str},"
+            item = item.next
+
+        result += "]"
+        return result
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.__next is None:
+            self.__next = self.__items
+
+        elif self.__next.next:
+            self.__next = self.__next.next
+
+        else:
+            self.__next = None
+            raise StopIteration
+
+        return self.__next.value if self.__next.key is None else {self.__next.key: self.__next.value}
 
     def __add(self, val, key=None, count=1):
         prev_item = None if not self.__last else self.__last
@@ -88,7 +125,7 @@ class Array:
             item = item.next
         return length
 
-    def set(self, index, value=None, key=None):
+    def set_at(self, index, value=None, key=None):
         """
         Set the value and key to item at specified index
         :param index: the index of item than will bbe changed
@@ -172,26 +209,6 @@ class Array:
             del to_be_deleted
 
         return True
-
-    def __str__(self):
-        result = "["
-        item = self.__items
-        key_str = val_str = ""
-        while item:
-            if type(item.key) == str:
-                key_str = f"'{item.key}'"
-            else:
-                key_str = f"{item.key}"
-
-            if type(item.value) == str:
-                val_str = f"'{item.value}'"
-            else:
-                val_str = f"{item.value}"
-            result += f"{key_str}: {val_str},"
-            item = item.next
-
-        result += "]"
-        return result
 
     def index(self, val=None, key=None) -> int:
         """
@@ -348,15 +365,15 @@ if __name__ == "__main__":
     print(test_array.delete(50))
     print(test_array.length())
 
-    if test_array.set(10, 100, key="k.100"):
+    if test_array.set_at(10, 100, key="k.100"):
         print(test_array)
 
     arr_copy = test_array.scopy()
     print(arr_copy)
-    arr_copy.set(20, 100, key="k.20")
-    arr_copy.set(30, 100, key="k.20")
-    arr_copy.set(40, 100, key="k.20")
-    arr_copy.set(50, 100, key="k.20")
+    arr_copy.set_at(20, 100, key="k.20")
+    arr_copy.set_at(30, 100, key="k.20")
+    arr_copy.set_at(40, 100, key="k.20")
+    arr_copy.set_at(50, 100, key="k.20")
 
     fv100 = arr_copy.filter(by_value=100)
     fk20 = arr_copy.filter(by_key="k.20")
@@ -370,3 +387,9 @@ if __name__ == "__main__":
     print("sort by value, descending", to_be_sorted.sort(reverse=True))
     print("sort by key, ascending", to_be_sorted.sort(reverse=False, sort_by="key"))
     print("sort by key, descending", to_be_sorted.sort(reverse=True, sort_by="key"))
+
+    for item in arr_copy:
+        v = item
+
+    for item in fv100:
+        v = item
