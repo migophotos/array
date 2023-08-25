@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 
 class Item:
@@ -11,7 +11,7 @@ class Item:
         self.prev = prev_item
         self.next = next_item
 
-    def get(self) -> List:
+    def get(self) -> Dict:
         if self.key is None:
             return self.value
         else:
@@ -51,7 +51,9 @@ class Array:
             else:
                 val_str = f"{item.value}"
 
-            result += ","
+            if len(result) > 1:
+                result += ","
+
             if key_str.find("None") >= 0:
                 result += f"{val_str}"
             else:
@@ -86,8 +88,10 @@ class Array:
             for k in value:
                 self.set_at(index=index, value=value[k], key=k)
         else:
-            if isinstance(value, (str, float)) or value < 0:
-                raise IndexError(f"index must be integer in range from 0 upto length of array -1")
+            if isinstance(index, (str, float)) or index < 0:
+                raise ValueError(f"index must be integer in range from 0 upto length of array -1")
+            if index > self.length():
+                raise IndexError(f"index {index} out of range")
             self.set_at(index=index, value=value)
 
     def __delitem__(self, key):
@@ -436,4 +440,5 @@ if __name__ == "__main__":
 
     fruits[0] = arr_copy[0]
     fruits[1] = {"k1": 1}
+    fruits[1000] = 0
     print(fruits)
