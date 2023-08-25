@@ -12,7 +12,10 @@ class Item:
         self.next = next_item
 
     def get(self) -> List:
-        return [self.key, self.value]
+        if self.key is None:
+            return self.value
+        else:
+            return {self.key: self.value}
 
 
 class Array:
@@ -47,7 +50,13 @@ class Array:
                 val_str = f"'{item.value}'"
             else:
                 val_str = f"{item.value}"
-            result += f"{key_str}: {val_str},"
+
+            result += ","
+            if key_str.find("None") >= 0:
+                result += f"{val_str}"
+            else:
+                result += f"{key_str}: {val_str}"
+
             item = item.next
 
         result += "]"
@@ -68,6 +77,21 @@ class Array:
             raise StopIteration
 
         return self.__next.value if self.__next.key is None else {self.__next.key: self.__next.value}
+
+    def __getitem__(self, item):
+        return self.at(index=item)
+
+    def __setitem__(self, index, value):
+        if type(value) == dict:
+            for k in value:
+                self.set_at(index=index, value=value[k], key=k)
+        else:
+            if isinstance(value, (str, float)) or value < 0:
+                raise IndexError(f"index must be integer in range from 0 upto length of array -1")
+            self.set_at(index=index, value=value)
+
+    def __delitem__(self, key):
+        self.delete(key=key)
 
     def __add(self, val, key=None, count=1):
         prev_item = None if not self.__last else self.__last
@@ -134,7 +158,7 @@ class Array:
     def set_at(self, index, value=None, key=None):
         """
         Set the value and key to item at specified index
-        :param index: the index of item than will bbe changed
+        :param index: the index of item that will be changed
         :param value: optional parameter that will be stored
         :param key: optional parameter that will bbe stored
         :return: [bool] True in case of item was found and changed
@@ -344,9 +368,6 @@ class Array:
             item = item.next
         return new_arr
 
-    def diff(self):
-        pass
-
     def append(self, val, key=None, count: int = 1) -> int:
         """
         Append the new item at the end of Array instance
@@ -394,8 +415,8 @@ if __name__ == "__main__":
     print("sort by key, ascending", to_be_sorted.sort(reverse=False, sort_by="key"))
     print("sort by key, descending", to_be_sorted.sort(reverse=True, sort_by="key"))
 
-    for item in arr_copy:
-        v = item
+    for i in arr_copy:
+        v = i
 
     myit = iter(fv100)
     print(next(myit))
@@ -412,3 +433,7 @@ if __name__ == "__main__":
     dobj = {"k1": "banana", "k2": "orange", "k3": "kiwi"}
     fruits_arr = Array(from_list=arr, from_dict=dobj)
     print(f"fruits length is: {fruits_arr.length()}: {fruits_arr}")
+
+    fruits[0] = arr_copy[0]
+    fruits[1] = {"k1": 1}
+    print(fruits)
