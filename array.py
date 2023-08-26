@@ -26,6 +26,7 @@ class Array:
         self.__next = None
         self.__last = None
         self.__items = None
+        self.__length = 0
         self.__sorted_list = []
         if length:
             self.__add(initial_value, count=length)
@@ -35,6 +36,8 @@ class Array:
 
         for dk in from_dict:
             self.__add(from_dict[dk], key=dk)
+
+        self.__length = self.length()
 
     def __str__(self):
         result = "["
@@ -97,10 +100,22 @@ class Array:
     def __delitem__(self, key):
         self.delete(key=key)
 
-    def __add(self, val, key=None, count=1):
+    def __count(self) -> int:
+        """
+        Count the length of Array instance
+        :return: the count of items, 0 - in case of empty
+        """
+        item = self.__items
+        length = 0
+        while item:
+            length += 1
+            item = item.next
+        return length
+
+    def __add(self, val, key=None, n=1):
         prev_item = None if not self.__last else self.__last
 
-        for index in range(0, count):
+        for index in range(0, n):
             item = Item(value=val, key=key, prev_item=prev_item)
 
             if not self.__items:
@@ -112,18 +127,34 @@ class Array:
                 prev_item = item
                 self.__last = prev_item
 
+        self.__length = self.__count()
+
     def __at(self, index=-1, key=None, value=None) -> Item:
-        item = self.__items
-        count = 0
-        while item:
-            if index >= 0 and index == count:
-                return item
-            if key and key == item.key:
-                return item
-            if value and value == item.value:
-                return item
-            item = item.next
-            count += 1
+        """
+        Find and return an Item by index or first occurrence of item with specified key or value
+        :param index:
+        :param key:
+        :param value:
+        :return: Item or None
+        """
+        if index > self.__length // 2:
+            item = self.__last
+            n = self.__length - 1
+            while item:
+                if index == n or (key and key == item.key) or (value and value == item.value):
+                    return item
+                n -= 1
+                item = item.prev
+        else:
+            item = self.__items
+            n = 0
+            while item:
+                if index >= 0 and index == n:
+                    return item
+                if (key and key == item.key) or (value and value == item.value):
+                    return item
+                item = item.next
+                n += 1
 
         return None
 
@@ -134,6 +165,12 @@ class Array:
         return "" if e["key"] is None else e["key"]
 
     def sort(self, reverse: bool = False, sort_by: str = "val"):
+        """
+        Sort an array by "val" or by "key" and return the new list with sorted elements
+        :param reverse: True - ascending sort order, False - descending sort order
+        :param sort_by: "val" - sort by values, "key" - sort by keys
+        :return: the new list of sorted items in form: [{key:value},{key:value},...], or [value, value, ...]
+        """
         list_to_sort = self.filter()
         if len(list_to_sort):
             if sort_by == "key":
@@ -145,6 +182,9 @@ class Array:
             return self.__sorted_list
 
     def get_sorted_list(self) -> List:
+        """
+        :return: return the previously sorted list
+        """
         return self.__sorted_list
 
     def length(self) -> int:
@@ -152,12 +192,7 @@ class Array:
         Count the length of Array instance
         :return: the count of items, 0 - in case of empty
         """
-        item = self.__items
-        length = 0
-        while item:
-            length += 1
-            item = item.next
-        return length
+        return self.__count()
 
     def set_at(self, index, value=None, key=None):
         """
@@ -176,34 +211,28 @@ class Array:
 
     def insert(self, value, key=None, at_index=0):
         """
-        Insert new Item at specified position
+        Insert the new Item at specified position
         :param value: new Item value
         :param key: new Item key (optional)
         :param at_index: new Item position inside array, Default is 0
-        :return: False in case of out of index
+        :return: False in case of index is out of length
         """
-        item = self.__items
-        index = 0
-        while item:
-            if at_index == index:
-                break
-            item = item.next
-            index += 1
-
-        if not item:
-            return False  # out of index
+        cur_item = self.__at(at_index)
+        if cur_item is None:
+            return False
 
         new_item = Item(value=value, key=key)
+
         if at_index == 0:
             new_item.next = self.__items
+            new_item.next.prev = new_item
             self.__items = new_item
-            new_item.next.prev = self.__items
         else:
-            new_item.next = item
-            new_item.prev = item.prev
-            new_item.prev.next = new_item
-            item.prev = new_item
+            new_item.next = cur_item
+            new_item.prev = cur_item.prev
+            new_item.prev.next = cur_item.prev = new_item
 
+        self.__length = self.__count()
         return True
 
     def delete(self, at_index=-1, value=None, key=None):
@@ -215,46 +244,36 @@ class Array:
         :param key: the item with this ey will be deleted
         :return: False in case of out of index
         """
-        item = self.__items
-
-        index = 0
-        while item:
-            if at_index >= 0 and at_index == index:
-                break
-            if value and value == item.value:
-                break
-            if key and key == item.key:
-                break
-
-            item = item.next
-            index += 1
-        if not item:
+        del_item = self.__at(at_index, key=key, value=value)
+        if del_item is None:
             return False
 
-        if index == 0:
-            to_be_deleted = self.__items
-            self.__items = to_be_deleted.next
-            del to_be_deleted
+        if at_index == 0:
+            self.__items = del_item.next
+            del del_item
         else:
-            to_be_deleted = item
-            item.prev.next = item.next
-            if item.next:
-                item.next.prev = item.prev
-            del to_be_deleted
+            del_item.prev.next = del_item.next
+            if del_item.next:
+                del_item.next.prev = del_item.prev
+            else:
+                self.__last = del_item.prev
 
+            del del_item
+
+        self.__length = self.__count()
         return True
 
-    def index(self, val=None, key=None) -> int:
+    def index(self, value=None, key=None) -> int:
         """
         Find the index of first occurrence of item with specified value or key
-        :param val: find item bby value
+        :param value: find item by value
         :param key: find value by key
         :return: an index of first occurrence of item or -1 in case of item not found
         """
         index = -1
         item = self.__items
         while item:
-            if val and val == item.value:
+            if value and value == item.value:
                 index += 1
                 break
             if key and key == item.key:
@@ -272,65 +291,39 @@ class Array:
         :param key: a key of item
         :return: value or None in case of item was not found
         """
-        value = None
-        item = self.__items
-        count = 0
-        while item:
-            if index >= 0 and index == count:
-                value = item.value
-                break
-            if key and key == item.key:
-                value = item.value
-                break
-            item = item.next
-            count += 1
+        item = self.__at(index, key=key)
+        if item is None:
+            return None
 
-        return value
+        return item.value
 
-    def key(self, index: int = -1, val=None):
+    def key(self, index: int = -1, value=None):
         """
         Find and return the key of item specified by index or first occurrence of item, specified by value
         :param index: an index of item
-        :param val: a value of item
+        :param value: a value of item
         :return: key or None in case of item was not found or item has not key
         """
-        key = None
-        item = self.__items
-        count = 0
-        while item:
-            if index >= 0 and index == count:
-                key = item.key
-                break
-            if val and val == item.value:
-                key = item.key
-                break
-            item = item.next
-            count += 1
+        item = self.__at(index, value=value)
+        if item is None:
+            return None
 
-        return key
+        return item.key
 
-    def at(self, index: int = -1, key=None, value=None) -> List:
+    def at(self, index: int = -1, key=None, value=None):
         """
-        Find an item by specified parameter and return the list of key and value: [key, value]
+        Find an item by specified parameter and return the {key: value} or value in case of key is None
         :param index: return an item by specified index
         :param key: return the first occurrence of item with specified key
         :param value: return the first occurrence of item with specified value
-        :return: the list of item parameters: key and value in form [item.key, item.value],
-        or empty list in case of item was not found
+        :return: the dict of item parameters: key and value in form {item.key: item.value}, or just the value in
+        case of key is None, or empty string in case of item was not found
         """
-        item = self.__items
-        count = 0
-        while item:
-            if index >= 0 and index == count:
-                return item.get()
-            if key and key == item.key:
-                return item.get()
-            if value and value == item.value:
-                return item.get()
-            item = item.next
-            count += 1
+        item = self.__at(index, key=key, value=value)
+        if item is None:
+            return ""
 
-        return []
+        return item.get()
 
     def filter(self, by_value=None, by_key=None) -> List[{}]:
         """
@@ -380,7 +373,7 @@ class Array:
         :param count: [int] - optional parameter, the count of items to be appended
         :return: the new length of array
         """
-        self.__add(val=val, key=key, count=count)
+        self.__add(val=val, key=key, n=count)
         return self.length()
 
 
@@ -390,7 +383,7 @@ if __name__ == "__main__":
         test_array.append(i, f"k.{i}")
 
     print(test_array)
-    print(test_array.index(val=50))
+    print(test_array.index(value=50))
     print(test_array.index(key="k.50"))
     print(test_array.length())
     print(test_array.delete(50))
@@ -440,5 +433,16 @@ if __name__ == "__main__":
 
     fruits[0] = arr_copy[0]
     fruits[1] = {"k1": 1}
-    fruits[1000] = 0
+    fruits.append("pineapple")
+    fruits.append("lemon")
+    fruits.insert("tomatoes", at_index=4)
     print(fruits)
+    fruits.delete(0)
+    print(fruits)
+    # fruits[1000] = 0  # IndexException
+
+    count = fruits.length()
+    fruits.delete(count-1)
+
+    count = fruits.length()
+    print(fruits.value(count-2))
